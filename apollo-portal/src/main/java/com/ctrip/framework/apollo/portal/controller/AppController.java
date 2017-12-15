@@ -83,7 +83,7 @@ public class AppController {
     Set<String> admins = appModel.getAdmins();
     if (!CollectionUtils.isEmpty(admins)) {
       rolePermissionService.assignRoleToUsers(RoleUtils.buildAppMasterRoleName(createdApp.getAppId()),
-                                              admins, userInfoHolder.getUser().getUserId());
+              admins, userInfoHolder.getUser().getUserId());
     }
 
     return createdApp;
@@ -113,19 +113,19 @@ public class AppController {
         response.addResponseEntity(RichResponseEntity.ok(appService.createEnvNavNode(env, appId)));
       } catch (Exception e) {
         response.addResponseEntity(RichResponseEntity.error(HttpStatus.INTERNAL_SERVER_ERROR,
-                                                            "load env:" + env.name() + " cluster error." + e
-                                                                .getMessage()));
+                "load env:" + env.name() + " cluster error." + e
+                        .getMessage()));
       }
     }
     return response;
   }
 
   @RequestMapping(value = "/envs/{env}", method = RequestMethod.POST, consumes = {
-      "application/json"})
+          "application/json"})
   public ResponseEntity<Void> create(@PathVariable String env, @RequestBody App app) {
 
     RequestPrecondition.checkArgumentsNotEmpty(app.getName(), app.getAppId(), app.getOwnerEmail(), app.getOwnerName(),
-                                               app.getOrgId(), app.getOrgName());
+            app.getOrgId(), app.getOrgName());
     if (!InputValidator.isValidClusterNamespace(app.getAppId())) {
       throw new BadRequestException(InputValidator.INVALID_CLUSTER_NAMESPACE_MESSAGE);
     }
@@ -150,13 +150,13 @@ public class AppController {
         appService.load(env, appId);
       } catch (Exception e) {
         if (e instanceof HttpClientErrorException &&
-            ((HttpClientErrorException) e).getStatusCode() == HttpStatus.NOT_FOUND) {
+                ((HttpClientErrorException) e).getStatusCode() == HttpStatus.NOT_FOUND) {
           response.addResponseEntity(RichResponseEntity.ok(env));
         } else {
           response.addResponseEntity(RichResponseEntity.error(HttpStatus.INTERNAL_SERVER_ERROR,
-                                                              String.format("load appId:%s from env %s error.", appId,
-                                                                            env)
-                                                              + e.getMessage()));
+                  String.format("load appId:%s from env %s error.", appId,
+                          env)
+                          + e.getMessage()));
         }
       }
     }
@@ -178,13 +178,12 @@ public class AppController {
       throw new BadRequestException(String.format("AppId格式错误: %s", InputValidator.INVALID_CLUSTER_NAMESPACE_MESSAGE));
     }
 
-    App app = new App();
-    app.setAppId(appId);
-    app.setName(appName);
-    app.setOwnerName(ownerName);
-    app.setOrgId(orgId);
-    app.setOrgName(orgName);
-
-    return app;
+    return App.builder()
+            .appId(appId)
+            .name(appName)
+            .ownerName(ownerName)
+            .orgId(orgId)
+            .orgName(orgName)
+            .build();
   }
 }
