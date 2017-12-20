@@ -58,7 +58,7 @@ public class AppServiceTest {
 
   @Before
   public void setup() {
-    App app = App.builder().name("app").appId(APP_ID).build();
+    App app = App.builder().name("app").appId(APP_ID).ownerName("apollo").build();
     app = appService.createAppInLocal(app);
 
     Favorite favorite = new Favorite();
